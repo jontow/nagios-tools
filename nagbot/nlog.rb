@@ -1,8 +1,6 @@
 class NagiosLogPoller
-	# This should be in a config file..
-	NAGIOSLOG = "/var/log/nagios/nagios.log"
-
-	def initialize(irchandle, host='localhost')
+	def initialize(cfg, irchandle, host='localhost')
+		@cfg = cfg
 		@irch = irchandle
 		@lastseen = Time.now.to_i - 60
 	end
@@ -13,7 +11,8 @@ class NagiosLogPoller
 	end
 
 	def cycle
-		File.open(NAGIOSLOG, 'r').each do |nl|
+		File.open(@cfg.naglog, 'r').each do |nl|
+			# Here's where you would add lines to ignore..
 			next if nl =~ /Auto-save/
 
 			ah = parse_event(nl)
@@ -24,7 +23,7 @@ class NagiosLogPoller
 
 			cookedevent = "#{Time.at(strip_ts(ah['ts']).to_i).strftime("%Y-%m-%d %H:%M:%S")} :: #{ah['host']}: #{ah['testname']} #{ah['status']}(#{ah['testnum']}): #{ah['alerttext']}"
 			puts "DEBUG: #{cookedevent}"
-			@irch.publish_event(cookedevent, @irch.channel)
+			@irch.publish_event(cookedevent)
 		end
 	end
 
@@ -36,8 +35,10 @@ class NagiosLogPoller
 		ahash = {}
 
 		(ahash['ts'], ahash['alerttype'], alertuseless, alertblob) = event.split(' ', 4)
-		(ahash['host'], ahash['testname'], ahash['status'], ahash['hardness'], ahash['testnum'], ahash['alerttext']) = alertblob.split(';', 6)
-		#puts "NLOG: #{ts} #{host} -- #{alerttype} -- #{alerttext}"
+		# Note: unrecognized/unparseable log lines get silently ignored, but not discarded.
+		if alertblob =~ /\;.*\;/
+			(ahash['host'], ahash['testname'], ahash['status'], ahash['hardness'], ahash['testnum'], ahash['alerttext']) = alertblob.split(';', 6)
+		end
 
 		return ahash
 	end

@@ -7,16 +7,14 @@ require 'nlog'
 Thread.abort_on_exception = true
 
 class IRCBot < Rica::MessageProcessor
-	attr_reader :channel
-
-	def initialize
+	def initialize(cfg)
 		super()
 		@c=[]
 		@nlog=nil
 		@s = nil
-		@channel = "#nagios"
+		@cfg = cfg
 		
-		@nlog = NagiosLogPoller.new(self)
+		@nlog = NagiosLogPoller.new(@cfg, self)
 
 		Thread.new do
 			sleep 15
@@ -34,7 +32,9 @@ class IRCBot < Rica::MessageProcessor
 
 	def on_recv_rpl_motd(msg)
 		if @c.empty?
-			cmnd_join(msg.server, @channel)
+			@cfg.channels.each do |channel|
+				cmnd_join(msg.server, channel)
+			end
 		end
 	end
 
@@ -117,11 +117,13 @@ class IRCBot < Rica::MessageProcessor
 		end
 	end
 
-	def publish_event(event, channel)
-		# Notice to channel
-		#cmnd_notice(@s, channel, event)
+	def publish_event(event)
+		@cfg.channels.each do |channel|
+			# Notice to channel
+			#cmnd_notice(@s, channel, event)
 
-		# Say in channel
-		cmnd_privmsg(@s, channel, event)
+			# Say in channel
+			cmnd_privmsg(@s, channel, event)
+		end
 	end
 end
