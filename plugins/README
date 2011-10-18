@@ -1,0 +1,15 @@
+2011-10-18 -- jontow@zenbsd.net
+
+A quick overview of the plugins in this directory:
+
+check_asterisk.rb :
+	- Uses Asterisk AMI to login, verify successful response, then logout.
+
+check_dhcpstats.sh :
+	- Uses custom "dhcpstats" script output, to be made available later.
+
+check_freeswitch.rb
+	- Uses FreeSWITCH event socket to login, get status, report, logout
+
+check_rwhoisd.rb
+	- Uses rwhoisd status message to report on objects built.
