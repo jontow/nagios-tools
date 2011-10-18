@@ -1,0 +1,6 @@
+2011-10-18 -- jontow@zenbsd.net
+
+Contents:
+* 'plugins'  -- miscellaneous home-brew plugins, mostly simple single-scripts.
+* 'nagbot'   -- evil robot that never sleeps; warns you of impending doom via IRC.
+
