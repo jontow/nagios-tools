@@ -1,7 +1,8 @@
 class NagiosLogPoller
+	# This should be in a config file..
 	NAGIOSLOG = "/var/log/nagios/nagios.log"
 
-	def initialize(irchandle, host='localhost', port=8021, password='ClueCon')
+	def initialize(irchandle, host='localhost')
 		@irch = irchandle
 		@lastseen = Time.now.to_i - 60
 	end
