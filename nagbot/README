@@ -1,0 +1,20 @@
+2011-10-18 -- jontow@zenbsd.net
+
+This robot should be run on the nagios server itself, with readable
+permissions set on the nagios logfile.  It'll join a channel, by
+default '#nagios', and start spewing crap at you in near real-time.
+
+It doesn't do a lot of preprocessing or parsing, but all of that can
+be modified in 'nlog.rb'.
+
+
+
+To configure the robot, edit start_bot.rb: modify 'bot.open()' line:
+  bot.open('ircserver.com', ['username', 'realname'], 'nickname')
+
+You may also need to change the IRC channel and the nagios logfile
+location: see IRCBot.initialize "@channel" variable in 'main.rb',
+and 'NAGIOSLOG' in 'nlog.rb'.  Yeah, yeah, dirty, I know.  I'll
+clean it up at some point and move all of this out into a config file!
+
+
